@@ -1,5 +1,10 @@
-#include "std_lib_facilities.h"
+#include <iostream>
+#include <string>
+#include <vector>
+#include <stdexcept>
+#include <exception>
 
+using namespace std;
 //------------------------------------------------------------------------------
 
 //  lass changed to class --- first one
@@ -39,7 +44,7 @@ Token_stream::Token_stream()
 void Token_stream::putback(Token t)
 {
     
-    if (full) error("putback() into a full buffer");
+    if (full) cerr<<"putback() into a full buffer";
     buffer = t;       // copy t to buffer
     full = true;      // buffer is now full
 }
@@ -76,7 +81,7 @@ Token Token_stream ::  get()
         return Token('8', val);   // let '8' represent "a number"
     }
     default:
-        error("Bad token");
+        cerr<<"Bad token";
     }
 }
 
@@ -100,17 +105,18 @@ double primary()
         double d = expression();
         t = ts.get();
         // " missing
-        if (t.kind != ')') error("')' expected");
+        if (t.kind != ')') cerr<<"')' expected";
             return d;
     }
     case '8':            // we use '8' to represent a number
         return t.value;  // return the number's value
     default:
-        error("primary expected");
+        cerr<<"primary expected";
     }
 }
 
 //------------------------------------------------------------------------------
+
 
 // deal with *, /, and %
 double term()
@@ -130,7 +136,7 @@ double term()
         case '/':
         {
             double d = primary();
-            if (d == 0) error("divide by zero");
+            if (d == 0) cerr<<"divide by zero";
             left /= d;
             t = ts.get();
             break;
@@ -138,8 +144,8 @@ double term()
         case '%':
         {
             double d = primary();
-            if (d == 0) error("Do not even try diving by zero !");
-            left = remainder(left,d);
+            if (d == 0) cerr<<"Do not even try diving by zero !";
+            left = left / d;
             t = ts.get();
             break;
         }
@@ -160,35 +166,7 @@ double expression()
     double left = term();      // read and evaluate a Term
     Token t = ts.get();        // get the next token from token stream
 
-    while (true) {
-        switch (t.kind) {
-        case '+':
-            left += term();    // evaluate Term and add
-            t = ts.get();
-            break;
-        case '-':// change + to -
-            left -= term();    // evaluate Term and subtract
-            t = ts.get();
-            break;
-        default:
-            ts.putback(t);     // put t back into the token stream
-            return left;       // finally: no more + or -: return the answer
-        }
-    }
-}
-
-//------------------------------------------------------------------------------
-
-int main()// add {} and define val
-{
-    cout << "Welcome to our simple calculator."<< endl;
-    cout << "Please enter expressions using floating-point numbers" << endl;
-    cout << "Please use + for sum | * for multiplication | / for division | - for subtraction | % for remainder !" << endl;
-    cout << "Use = to print your value" << endl;
-    cout << "Use x to quit" << endl;
-    double val = 0.0;
-    try
-    {
+    while (true) { 
         while (cin) {
             Token t = ts.get();
 
@@ -200,16 +178,12 @@ int main()// add {} and define val
                 ts.putback(t);
             val = expression();
         }
-        keep_window_open();
+       
     }
     catch (exception& e) {
         cerr << "error: " << e.what() << '\n';
-        keep_window_open();
         return 1;
     }
-    catch (...) {
-        cerr << "Oops: unknown exception!\n";
-        keep_window_open();
-        return 2;
-    }
+
+    return 0;
 }
