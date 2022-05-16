@@ -166,7 +166,35 @@ double expression()
     double left = term();      // read and evaluate a Term
     Token t = ts.get();        // get the next token from token stream
 
-    while (true) { 
+    while (true) {
+        switch (t.kind) {
+        case '+':
+            left += term();    // evaluate Term and add
+            t = ts.get();
+            break;
+        case '-':// change + to -
+            left -= term();    // evaluate Term and subtract
+            t = ts.get();
+            break;
+        default:
+            ts.putback(t);     // put t back into the token stream
+            return left;       // finally: no more + or -: return the answer
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+
+int main()// add {} and define val
+{
+    cout << "Welcome to our simple calculator."<< endl;
+    cout << "Please enter expressions using floating-point numbers" << endl;
+    cout << "Please use + for sum | * for multiplication | / for division | - for subtraction | % for remainder !" << endl;
+    cout << "Use = to print your value" << endl;
+    cout << "Use x to quit" << endl;
+    double val = 0.0;
+    try
+    {
         while (cin) {
             Token t = ts.get();
 
