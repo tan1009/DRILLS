@@ -19,8 +19,6 @@ const char square_root = '@';
 const char exponent = '^';
 const string sqrtkey = "sqrt";
 const string expkey = "pow";
-const string sinkey = "sin";
-const string coskey = "cos";
 const string quitkey = "quit";
 const string helpkey = "help";
 
@@ -120,8 +118,6 @@ Token Token_stream::get()
                 if (s == declkey) return Token{let};    // declaration keyword
                 else if (s == sqrtkey) return Token{square_root};
                 else if (s == expkey) return Token{exponent};
-                else if (s == sinkey) return Token{c_sin};
-                else if (s == coskey) return Token{c_cos};
                 else if (s == quitkey) return Token{quit};
                 else if (s == helpkey) return Token{help};
                 else return Token{name, s};
@@ -221,26 +217,6 @@ double calc_pow()
     return pow(base, power);
 }
 
-double calc_sin()
-{
-    char ch;
-    if (cin.get(ch) && ch != '(') error("'(' expected");
-    cin.putback(ch);
-    double d = expression();
-    if (d == 0 || d == 180) return 0;       // return true zero
-    return sin(d*3.1415926535/180);
-}
-
-double calc_cos()
-{
-    char ch;
-    if (cin.get(ch) && ch != '(') error("'(' expected");
-    cin.putback(ch);
-    double d = expression();
-    if (d == 90 || d == 270) return 0;      // return 0 instead of 8.766e-11
-    return cos(d*3.1415926535/180);
-}
-
 double handle_variable(Token& t)
 {
     Token t2 = ts.get();
@@ -286,10 +262,6 @@ double primary()            // deal with numbers and parenthesis
             return calc_sqrt();
         case exponent:
             return calc_pow();
-        case c_sin:
-            return calc_sin();
-        case c_cos:
-            return calc_cos();
         default:
             error("primary expected");
     }
