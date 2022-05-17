@@ -7,8 +7,6 @@ const char print = ';';
 const char name = 'a';
 const char let = 'L';           // declaration token
 const char help = '?';
-const char c_sin = 's';
-const char c_cos = 'c';
 
 const string prompt = "> ";
 const string result = "= ";
